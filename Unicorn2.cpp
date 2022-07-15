@@ -4,8 +4,8 @@
 #include <iostream>
 #include<Windows.h>
 #include<sys\timeb.h> 
-#define NextPayloadSize 64
-#define NextNum 3
+#define NextPayloadSize 32
+#define NextNum 10
 #define GapTime 512
 
 int myEXESize = 0;
