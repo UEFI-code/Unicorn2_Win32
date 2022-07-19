@@ -5,7 +5,7 @@
 #include<Windows.h>
 #include<sys\timeb.h> 
 int NextPayloadSize = 1024;
-#define NextNum 5
+#define NextNum 8
 #define GapTime 128
 
 int myEXESize = 0;
