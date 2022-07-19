@@ -83,7 +83,7 @@ int main(int argc, char** argv)
         //CreateProcessA(nextEXEName, NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
         ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_HIDE);
         Sleep(GapTime);
-        nextPayloadBuf[MuPos] = 0x90;
+        //nextPayloadBuf[MuPos] = 0x90;
     }
     
 }
