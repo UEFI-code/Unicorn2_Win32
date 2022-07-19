@@ -22,6 +22,8 @@ PROCESS_INFORMATION pi;
 
 struct timeb AccuTime;
 
+int MuPos = 0;
+
 //typedef void(*myFunc)(void);
 //void(*f1)(void) = (void(*)(void)) executeableMem;
 //static UINT8 myTestcode[] = { 0x90, 0x90, 0x90, 0xCC, 0xC3 };
@@ -80,14 +82,15 @@ int main(int argc, char** argv)
         //CreateProcessA(nextEXEName, NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
         ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_NORMAL);
         Sleep(GapTime);
+        nextPayloadBuf[MuPos] = 0x90;
     }
     
 }
 
 void MuNxtPayload()
 {
-    int pos = rand() % (NextPayloadSize - 5) + 4;
-    nextPayloadBuf[pos] = rand() % 256;
+    MuPos = rand() % (NextPayloadSize - 5) + 4;
+    nextPayloadBuf[MuPos] = rand() % 256;
 }
 
 void GenNxtPayload()
