@@ -4,16 +4,17 @@
 #include <iostream>
 #include<Windows.h>
 #include<sys\timeb.h> 
-#define NextPayloadSize 32
-#define NextNum 10
-#define GapTime 512
+#define NextPayloadSize 1024
+#define NextNum 3
+#define GapTime 128
 
 int myEXESize = 0;
 int myStaticLength = 0;
 int myPayloadLength = 0;
 UINT8* myFileBuffer = 0;
 UINT8* executeableMem = 0;
-UINT8 nextPayloadBuf[NextPayloadSize] = { 0 };
+//UINT8 nextPayloadBuf[NextPayloadSize] = { 0 };
+UINT8* nextPayloadBuf = 0;
 char nextEXEName[256] = { 0 };
 
 STARTUPINFOA si;
@@ -26,6 +27,7 @@ struct timeb AccuTime;
 //static UINT8 myTestcode[] = { 0x90, 0x90, 0x90, 0xCC, 0xC3 };
 
 void GenNxtPayload();
+void MuNxtPayload();
 
 int main(int argc, char** argv)
 {
@@ -51,10 +53,21 @@ int main(int argc, char** argv)
             break;
         }
     if (myStaticLength == 0)
+    {
         myStaticLength = myEXESize;
+        nextPayloadBuf = (UINT8*)malloc(NextPayloadSize);
+        for (int i = 0; i < NextPayloadSize - 1; i++)
+        {
+            nextPayloadBuf[i] = 0x90;
+        }
+        nextPayloadBuf[NextPayloadSize - 1] = 0xC3;
+    }
+    else
+        nextPayloadBuf = executeableMem;
+        
     for (int i = 0; i < NextNum; i++)
     {
-        GenNxtPayload();
+        MuNxtPayload();
         sprintf(nextEXEName, "Unicor2-0x%X%X.exe", rand(), rand());
         fp = fopen(nextEXEName, "wb");
         fwrite(myFileBuffer, 1, myStaticLength, fp);
@@ -67,8 +80,16 @@ int main(int argc, char** argv)
     
 }
 
+void MuNxtPayload()
+{
+    int pos = rand() % (NextPayloadSize - 4) + 3;
+    nextPayloadBuf[pos] = rand() % 256;
+}
+
 void GenNxtPayload()
 {
+    //ftime(&AccuTime);
+    //srand((unsigned)AccuTime.time);
     nextPayloadBuf[0] = 0x90;
     nextPayloadBuf[1] = 0x90;
     nextPayloadBuf[2] = 0x90;
