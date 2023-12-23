@@ -24,7 +24,7 @@ Unicorn2は、自分自身を複製し、新しい形に変化することがで
 
 2. Visual Studio Codeでプロジェクトを開きます。
 
-3. Unicorn2.cppをビルドして実行します。
+3. Unicorn2.exeをビルドして実行します。
 
 # 🎀 注意
 
@@ -36,4 +36,4 @@ Unicorn2はあくまでソフトウェアアニマルであり、実際の動物
 
 ## 作者
 
-SuperHacker UEFI (Kaikou Seitaku)
+SuperHacker UEFI (怪光世卓)
