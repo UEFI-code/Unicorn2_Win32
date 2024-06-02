@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Unicorn2.cpp">
+    <ClCompile Include="Unicorn2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PopulationCtl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
