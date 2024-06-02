@@ -75,12 +75,12 @@ int main(int argc, char** argv)
         while(1)
         {
             // check if the thread is still alive
-            if (WaitForSingleObject(hThread, 0) == WAIT_OBJECT_0)
+            if (WaitForSingleObject(hThread, GapTime * 2) == WAIT_TIMEOUT)
             {
                 // check for watchdog
                 if (time(NULL) - MuWatchDog > 10)
                 {
-                    printf("Mutation Watchdog Timeout, revert x86 data\n");
+                    printf("Mutation Watchdog Timeout, revert x86 code\n");
                     for(int i=0; i<x86MaxInsLen; i++)
                     {
                         nextPayloadBuf[MuPos + i] = BackupBuf[i];
@@ -97,7 +97,6 @@ int main(int argc, char** argv)
                 CloseHandle(hThread);
                 break;
             }
-            Sleep(1000);
         }
         
         while (fp == NULL)
