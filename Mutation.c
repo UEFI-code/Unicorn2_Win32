@@ -1,13 +1,16 @@
 #include <stdio.h>
 #include <Windows.h>
+#include <sys\timeb.h>
 #include "Unicorn2.h"
-
-#define x86MaxInsLen 10
 
 UINT8 BackupBuf[x86MaxInsLen] = { 0x0 };
 
 void MuNxtPayload()
 {
+    static struct timeb AccuTime;
+    ftime(&AccuTime);
+    srand((unsigned)AccuTime.time); // For standlone thread
+
     UINT8 bakupData = 0;
     while(1)
     {
@@ -26,7 +29,8 @@ void MuNxtPayload()
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
-            printf("Mutation Failed @ 0x%X, revert data\n", MuPos);
+            printf("Mutation Failed @ 0x%X, revert x86 data\n", MuPos);
+            MuWatchDog = time();
             for(int i=0; i<x86MaxInsLen; i++)
             {
                 nextPayloadBuf[MuPos + i] = BackupBuf[i];

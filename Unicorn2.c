@@ -3,9 +3,10 @@
 #define _CRT_SECURE_NO_WARNINGS
 //#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 
-#include<stdio.h>
-#include<Windows.h>
-#include<sys\timeb.h> 
+#include <stdio.h>
+#include <Windows.h>
+#include <sys\timeb.h>
+#include "Unicorn2.h"
 
 int NextPayloadSize = 32768;
 #define NextNum 8
@@ -18,6 +19,7 @@ UINT8* myFileBuffer = 0;
 UINT8* executeableMem = 0;
 UINT8* nextPayloadBuf = 0;
 int MuPos = 0;
+int MuWatchDog = 0;
 
 char nextEXEName[256] = { 0 };
 
@@ -69,20 +71,33 @@ int main(int argc, char** argv)
 
     for (int i = 0; i < NextNum; i++)
     {
+        HANDLE hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MuNxtPayload, 0, 0, 0);
         while(1)
         {
-            HANDLE hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MuNxtPayload, 0, 0, 0);
-            if (WaitForSingleObject(hThread, GapTime * 2) == WAIT_TIMEOUT)
+            // check if the thread is still alive
+            if (WaitForSingleObject(hThread, 0) == WAIT_OBJECT_0)
             {
-                printf("New Mutation Code Stucked, retry...\n");
-                TerminateThread(hThread, 0);
-                CloseHandle(hThread);
-                hThread = NULL;
+                // check for watchdog
+                if (time() - MuWatchDog > 10)
+                {
+                    printf("Mutation Watchdog Timeout, revert x86 data\n");
+                    for(int i=0; i<x86MaxInsLen; i++)
+                    {
+                        nextPayloadBuf[MuPos + i] = BackupBuf[i];
+                    }
+                }
+                else
+                {
+                    printf("Good Mutation Thread\n");
+                }
             }
             else
             {
+                // consider as done
+                CloseHandle(hThread);
                 break;
             }
+            Sleep(1000);
         }
         
         while (fp == NULL)
