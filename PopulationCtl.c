@@ -25,7 +25,7 @@ int Killer()
 
     int unicorn_count = 0;
     do {
-        if (strncmp(pe.szExeFile, "Unicorn2", 7) == 0) {
+        if (wcsncmp(pe.szExeFile, L"Unicorn2", 8) == 0) {
             unicorn_count++;
         }
     } while (Process32Next(hSnapShot, &pe));
@@ -36,7 +36,7 @@ int Killer()
         // Let's kill unlucky unicorns
         Process32First(hSnapShot, &pe);
         do {
-            if (strncmp(pe.szExeFile, "Unicorn2", 7) == 0 && rand() % 2 == 0) {
+            if (wcsncmp(pe.szExeFile, L"Unicorn2", 8) == 0 && rand() % 2 == 0) {
                 HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe.th32ProcessID);
                 if (hProcess != NULL) {
                     TerminateProcess(hProcess, 0);
