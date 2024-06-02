@@ -1,6 +1,8 @@
 // Unicorn2.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 #define _CRT_SECURE_NO_WARNINGS
+#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
+
 #include<stdio.h>
 //#include <iostream>
 #include<Windows.h>
