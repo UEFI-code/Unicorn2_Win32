@@ -17,6 +17,7 @@ int myPayloadLength = 0;
 UINT8* myFileBuffer = 0;
 UINT8* executeableMem = 0;
 UINT8* nextPayloadBuf = 0;
+int MuPos = 0;
 
 char nextEXEName[256] = { 0 };
 
@@ -68,7 +69,22 @@ int main(int argc, char** argv)
 
     for (int i = 0; i < NextNum; i++)
     {
-        MuNxtPayload();
+        while(1)
+        {
+            HANDLE hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MuNxtPayload, 0, 0, 0);
+            if (WaitForSingleObject(hThread, GapTime * 2) == WAIT_TIMEOUT)
+            {
+                printf("New Mutation Code Stucked, retry...\n");
+                TerminateThread(hThread, 0);
+                CloseHandle(hThread);
+                hThread = NULL;
+            }
+            else
+            {
+                break;
+            }
+        }
+        
         while (fp == NULL)
         {
             sprintf(nextEXEName, "Unicorn2-0x%X%X.exe", rand(), rand());

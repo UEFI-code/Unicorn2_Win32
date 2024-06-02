@@ -8,7 +8,6 @@ UINT8 BackupBuf[x86MaxInsLen] = { 0x0 };
 
 void MuNxtPayload()
 {
-    int MuPos = 0;
     UINT8 bakupData = 0;
     while(1)
     {
