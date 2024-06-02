@@ -108,17 +108,3 @@ void MuNxtPayload()
         }
     }
 }
-
-void GenNxtPayload()
-{
-    //ftime(&AccuTime);
-    //srand((unsigned)AccuTime.time);
-    nextPayloadBuf[0] = 0x90;
-    nextPayloadBuf[1] = 0x90;
-    nextPayloadBuf[2] = 0x90;
-    for (int i = 3; i < NextPayloadSize - 1; i++)
-    {
-        nextPayloadBuf[i] = rand() % 256;
-    }
-    nextPayloadBuf[NextPayloadSize - 1] = 0xC3;
-}
