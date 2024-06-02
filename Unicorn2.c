@@ -78,7 +78,7 @@ int main(int argc, char** argv)
             if (WaitForSingleObject(hThread, 0) == WAIT_OBJECT_0)
             {
                 // check for watchdog
-                if (time() - MuWatchDog > 10)
+                if (time(NULL) - MuWatchDog > 10)
                 {
                     printf("Mutation Watchdog Timeout, revert x86 data\n");
                     for(int i=0; i<x86MaxInsLen; i++)

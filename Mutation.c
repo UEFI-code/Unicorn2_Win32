@@ -30,7 +30,7 @@ void MuNxtPayload()
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
             printf("Mutation Failed @ 0x%X, revert x86 data\n", MuPos);
-            MuWatchDog = time();
+            MuWatchDog = time(NULL);
             for(int i=0; i<x86MaxInsLen; i++)
             {
                 nextPayloadBuf[MuPos + i] = BackupBuf[i];
