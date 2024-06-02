@@ -127,8 +127,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Mutation.c" />
     <ClCompile Include="PopulationCtl.c" />
     <ClCompile Include="Unicorn2.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Unicorn2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
