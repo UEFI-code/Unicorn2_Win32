@@ -2,6 +2,7 @@
 #include <tlhelp32.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys\timeb.h> 
 
 int Killer() 
 {
@@ -9,6 +10,10 @@ int Killer()
     GetSystemInfo(&sysinfo);
     int num_cpu = sysinfo.dwNumberOfProcessors;
     printf("Number of CPUs: %d\n", num_cpu);
+
+    static struct timeb AccuTime;
+    ftime(&AccuTime);
+    srand((unsigned)AccuTime.time);
 
     PROCESSENTRY32 pe;
     pe.dwSize = sizeof(PROCESSENTRY32);
@@ -22,20 +27,33 @@ int Killer()
     do {
         if (strncmp(pe.szExeFile, "Unicorn2", 7) == 0) {
             unicorn_count++;
-            if (unicorn_count > num_cpu * 2) {
+        }
+    } while (Process32Next(hSnapShot, &pe));
+
+    printf("Number of Unicorn2 processes: %d\n", unicorn_count);
+
+    if (unicorn_count > num_cpu * 2) {
+        // Let's kill unlucky unicorns
+        Process32First(hSnapShot, &pe);
+        do {
+            if (strncmp(pe.szExeFile, "Unicorn2", 7) == 0 && rand() % 2 == 0) {
                 HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe.th32ProcessID);
                 if (hProcess != NULL) {
                     TerminateProcess(hProcess, 0);
                     CloseHandle(hProcess);
-                    printf("Terminated process: %s\n", pe.szExeFile); 
+                    printf("Killed Unicorn2 process %d\n", pe.th32ProcessID);
+                    unicorn_count--;
+                    if (unicorn_count <= num_cpu * 2) {
+                        break;
+                    }
                 }
                 else {
-                    printf("Failed to terminate process: %s\n", pe.szExeFile);
+                    printf("Failed to open process %d\n", pe.th32ProcessID);
                 }
             }
-        }
-    } while (Process32Next(hSnapShot, &pe));
-
+        } while (Process32Next(hSnapShot, &pe));
+    }
+    
     CloseHandle(hSnapShot);
     return 0;
 }
