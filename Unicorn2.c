@@ -8,8 +8,8 @@
 #include<sys\timeb.h> 
 
 int NextPayloadSize = 32768;
-#define NextNum 3
-#define GapTime 4096
+#define NextNum 8
+#define GapTime 1024
 
 int myEXESize = 0;
 int myStaticLength = 0;
