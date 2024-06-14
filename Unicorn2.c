@@ -72,32 +72,22 @@ int main(int argc, char** argv)
     for (int i = 0; i < NextNum; i++)
     {
         HANDLE hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MuNxtPayload, 0, 0, 0);
-        while(1)
+        while(WaitForSingleObject(hThread, GapTime * 2) == WAIT_TIMEOUT)
         {
-            // check if the thread is still alive
-            if (WaitForSingleObject(hThread, GapTime * 2) == WAIT_TIMEOUT)
+            if (time(NULL) - MuWatchDog > 10)
             {
-                // check for watchdog
-                if (time(NULL) - MuWatchDog > 10)
+                printf("Mutation Watchdog Timeout, revert x86 code\n");
+                for(int i=0; i<x86MaxInsLen; i++)
                 {
-                    printf("Mutation Watchdog Timeout, revert x86 code\n");
-                    for(int i=0; i<x86MaxInsLen; i++)
-                    {
-                        nextPayloadBuf[MuPos + i] = BackupBuf[i];
-                    }
-                }
-                else
-                {
-                    printf("Good Mutation Thread\n");
+                    nextPayloadBuf[MuPos + i] = BackupBuf[i];
                 }
             }
             else
             {
-                // consider as done
-                CloseHandle(hThread);
-                break;
+                printf("Good Mutation Thread\n");
             }
         }
+        CloseHandle(hThread);
         
         while (fp == NULL)
         {
