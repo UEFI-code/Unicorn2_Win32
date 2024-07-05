@@ -10,8 +10,7 @@ void MuNxtPayload()
     static struct timeb AccuTime;
     ftime(&AccuTime);
     srand((unsigned)AccuTime.time); // For standlone thread
-
-    UINT8 bakupData = 0;
+    
     while(1)
     {
         printf("Finding Liveable Mutation Position...\n");
