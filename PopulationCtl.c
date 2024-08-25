@@ -3,13 +3,12 @@
 #include <string.h>
 #include <stdio.h>
 #include <sys\timeb.h> 
+#include "Unicorn2.h"
 
 static struct timeb AccuTime;
 
 HANDLE hSnapShot;
 PROCESSENTRY32 pe = {sizeof(PROCESSENTRY32), 0};
-
-extern char **global_argv;
 
 int get_pop_num()
 {
