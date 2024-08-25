@@ -10,7 +10,7 @@
 
 int NextPayloadSize = 32768;
 #define NextNum 8
-#define GapTime 1024
+#define GapTime 4096
 
 int myEXESize = 0;
 int myStaticLength = 0;
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     for (int i = 0; i < NextNum; i++)
     {
         HANDLE hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MuNxtPayload, 0, 0, 0);
-        while(WaitForSingleObject(hThread, GapTime * 2) == WAIT_TIMEOUT)
+        while(WaitForSingleObject(hThread, GapTime) == WAIT_TIMEOUT) // Thread is still alive
         {
             if (time(NULL) - MuWatchDog > 10)
             {
