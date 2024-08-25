@@ -28,7 +28,7 @@ void MuNxtPayload()
         }
         __except(TRUE)
         {
-            printf("Mutation Failed @ 0x%X, revert x86 code\n", MuPos);
+            // printf("Mutation Failed @ 0x%X, revert x86 code\n", MuPos);
             MuWatchDog = time(NULL);
             for(int i=0; i<x86MaxInsLen; i++)
             {
