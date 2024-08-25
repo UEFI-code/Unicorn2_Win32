@@ -7,3 +7,5 @@ extern int MuWatchDog;
 extern UINT8 BackupBuf[];
 
 extern char** global_argv;
+
+UINT64 Get_Hardware_Rand();

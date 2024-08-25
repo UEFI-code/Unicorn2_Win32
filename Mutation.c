@@ -1,24 +1,20 @@
 #include <stdio.h>
 #include <Windows.h>
-#include <sys\timeb.h>
+
 #include "Unicorn2.h"
 
 UINT8 BackupBuf[x86MaxInsLen] = { 0x0 };
 
 void MuNxtPayload()
 {
-    static struct timeb AccuTime;
-    ftime(&AccuTime);
-    srand((unsigned)AccuTime.time); // For standlone thread
-    
     while(1)
     {
         printf("Finding Liveable Mutation Position...\n");
-        MuPos = rand() % (NextPayloadSize - 5 - x86MaxInsLen) + 4; // Keep first 4 bytes and last 1 byte
+        MuPos = Get_Hardware_Rand() % (NextPayloadSize - 5 - x86MaxInsLen) + 4; // Keep first 4 bytes and last 1 byte
         for(int i=0; i<x86MaxInsLen; i++)
         {
             BackupBuf[i] = nextPayloadBuf[MuPos + i];
-            nextPayloadBuf[MuPos + i] = rand() % 256;
+            nextPayloadBuf[MuPos + i] = Get_Hardware_Rand() % 256;
         }
         __try
         {

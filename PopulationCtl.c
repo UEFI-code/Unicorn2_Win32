@@ -2,10 +2,7 @@
 #include <tlhelp32.h>
 #include <string.h>
 #include <stdio.h>
-#include <sys\timeb.h> 
 #include "Unicorn2.h"
-
-static struct timeb AccuTime;
 
 HANDLE hSnapShot;
 PROCESSENTRY32 pe = {sizeof(PROCESSENTRY32), 0};
@@ -29,12 +26,10 @@ int get_pop_num()
 
 void kill_one()
 {
-    ftime(&AccuTime);
-    srand((unsigned)AccuTime.time);
     hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     Process32First(hSnapShot, &pe);
     do {
-        if (wcsncmp(pe.szExeFile, L"Unicorn2", 8) == 0 && rand() % 2 == 0) {
+        if (wcsncmp(pe.szExeFile, L"Unicorn2", 8) == 0 && Get_Hardware_Rand() % 2 == 0) {
             HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe.th32ProcessID);
             if (hProcess != NULL) {
                 TerminateProcess(hProcess, 0);
