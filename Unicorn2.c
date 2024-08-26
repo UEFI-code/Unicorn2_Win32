@@ -89,7 +89,7 @@ int main(int argc, char** argv)
         
         while (fp == NULL)
         {
-            sprintf(nextEXEName, "Unicorn2-0x%X.exe", Get_Hardware_Rand());
+            sprintf(nextEXEName, "Unicorn2-%X.exe", Get_Hardware_Rand() & 0xFFFF);
             fp = fopen(nextEXEName, "wb");
         }
         fwrite(myFileBuffer, 1, myStaticLength, fp);
