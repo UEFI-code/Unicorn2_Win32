@@ -14,7 +14,7 @@ void MuNxtPayload()
         for(int i=0; i<x86MaxInsLen; i++)
         {
             BackupBuf[i] = nextPayloadBuf[MuPos + i];
-            nextPayloadBuf[MuPos + i] = Get_Hardware_Rand() % 256;
+            nextPayloadBuf[MuPos + i] = Get_Hardware_Rand() & 0xFF;
         }
         __try
         {
