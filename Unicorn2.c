@@ -124,6 +124,7 @@ int main(int argc, char** argv)
         fclose(fp); fp = NULL; // Unlock the file
 
         //ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_SHOWNORMAL);
-        CreateThread(0, 0, (LPTHREAD_START_ROUTINE)create_proc_worker, 0, 0, 0);
+        hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)create_proc_worker, 0, 0, 0);
+        WaitForSingleObject(hThread, GapTime);
     }
 }
