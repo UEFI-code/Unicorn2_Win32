@@ -104,7 +104,7 @@ int main(int argc, char** argv)
             NULL,          // lpProcessAttributes
             NULL,          // lpThreadAttributes
             FALSE,         // bInheritHandles
-            0,             // dwCreationFlags
+            CREATE_NEW_CONSOLE, // dwCreationFlags
             NULL,          // lpEnvironment
             NULL,          // lpCurrentDirectory
             &si,

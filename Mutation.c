@@ -7,7 +7,7 @@ UINT8 BackupBuf[x86MaxInsLen] = { 0x0 };
 
 void MuNxtPayload()
 {
-    while(1)
+    for(int count=0; count<1024; count++)
     {
         printf("Finding Liveable Mutation Position...\n");
         MuPos = Get_Hardware_Rand() % (NextPayloadSize - 5 - x86MaxInsLen) + 4; // Keep first 4 bytes and last 1 byte
@@ -25,11 +25,11 @@ void MuNxtPayload()
         __except(TRUE)
         {
             // printf("Mutation Failed @ 0x%X, revert x86 code\n", MuPos);
-            MuWatchDog = time(NULL);
             for(int i=0; i<x86MaxInsLen; i++)
             {
                 nextPayloadBuf[MuPos + i] = BackupBuf[i];
             }
+            MuWatchDog = time(NULL);
         }
     }
 }
