@@ -20,7 +20,7 @@ void MuNxtPayload()
         {
             ((void(*)())(nextPayloadBuf + 1))();
             printf("Mutation Success @ 0x%X\n", MuPos);
-            break;
+            return;
         }
         __except(TRUE)
         {
@@ -32,4 +32,5 @@ void MuNxtPayload()
             MuWatchDog = time(NULL);
         }
     }
+    printf("Mutation Failed: max trial exceed\n");
 }
