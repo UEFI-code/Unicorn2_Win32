@@ -57,10 +57,10 @@ int PopCtl()
         Sleep(1000);
         int pop_num = get_pop_num();
         printf("Number of Unicorn2 processes: %d\n", pop_num);
-        // if (pop_num < num_cpu * 2) {
-        //     ShellExecuteA(NULL, "open", global_argv[0], NULL, NULL, SW_SHOWNORMAL);
-        // }
-        if (pop_num > 4 * num_cpu) {
+        if (pop_num < num_cpu * 2) {
+            ShellExecuteA(NULL, "open", global_argv[0], NULL, NULL, SW_SHOWNORMAL);
+        }
+        else if (pop_num > 4 * num_cpu) {
             kill_one();
         }
     }
