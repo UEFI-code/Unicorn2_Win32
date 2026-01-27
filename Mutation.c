@@ -10,7 +10,7 @@ void MuNxtPayload()
     for(int count=0; count<1024; count++)
     {
         printf("Finding Liveable Mutation Position...\n");
-        MuPos = Get_Hardware_Rand() % (NextPayloadSize - 5 - x86MaxInsLen) + 4; // Keep first 4 bytes and last 1 byte
+        MuPos = Get_Hardware_Rand() % (NextPayloadSize - 8 - x86MaxInsLen) + 8; // Keep first 8 bytes
         for(int i=0; i<x86MaxInsLen; i++)
         {
             BackupBuf[i] = nextPayloadBuf[MuPos + i];
@@ -18,7 +18,7 @@ void MuNxtPayload()
         }
         __try
         {
-            ((void(*)())(nextPayloadBuf + 1))();
+            ((void(*)())(nextPayloadBuf + 8))();
             printf("Mutation Success @ 0x%X\n", MuPos);
             return;
         }
