@@ -15,6 +15,11 @@ void MuNxtPayload()
         {
             BackupBuf[i] = nextPayloadBuf[MuPos + i];
             nextPayloadBuf[MuPos + i] = Get_Hardware_Rand() & 0xFF;
+            if (nextPayloadBuf[MuPos + i] == 0xC3)
+            {
+                printf("Patched RET->NOP\n");
+                nextPayloadBuf[MuPos + i] = 0x90;
+            }
         }
         __try
         {
