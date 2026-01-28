@@ -17,8 +17,8 @@ void MuNxtPayload()
             nextPayloadBuf[MuPos + i] = Get_Hardware_Rand() & 0xFF;
             if (nextPayloadBuf[MuPos + i] == 0xC3)
             {
-                printf("Patched RET->NOP\n");
-                nextPayloadBuf[MuPos + i] = 0x90;
+                printf("revert RET instruction\n");
+                nextPayloadBuf[MuPos + i] = BackupBuf[i];
             }
         }
         __try
