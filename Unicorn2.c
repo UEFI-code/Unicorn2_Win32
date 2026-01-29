@@ -98,6 +98,14 @@ int main(int argc, char** argv)
         HANDLE hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MuNxtPayload, 0, 0, 0);
         while(WaitForSingleObject(hThread, GapTime) == WAIT_TIMEOUT) // Thread is still alive
         {
+            if (time(NULL) - MuWatchDog > 20)
+            {
+                // owari
+                printf("Mutation Thread Dead Loop...\n");
+                strcpy(nextEXEName, argv[0]);
+                create_proc_worker();
+                RtlExitUserProcess(-1);
+            }
             if (time(NULL) - MuWatchDog > 10)
             {
                 printf("Mutation Watchdog Timeout, revert x86 code\n");
