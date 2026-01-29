@@ -10,6 +10,7 @@ void MuNxtPayload()
     for(int count=0; count<1024; count++)
     {
         printf("Finding Liveable Mutation Position...\n");
+        MuWatchDog = time(NULL);
         MuPos = Get_Hardware_Rand() % (NextPayloadSize - 8 - x86MaxInsLen) + 8; // Keep first 8 bytes
         for(int i=0; i<x86MaxInsLen; i++)
         {
@@ -34,7 +35,6 @@ void MuNxtPayload()
             {
                 nextPayloadBuf[MuPos + i] = BackupBuf[i];
             }
-            MuWatchDog = time(NULL);
         }
     }
     printf("Mutation Failed: max trial exceed\n");
