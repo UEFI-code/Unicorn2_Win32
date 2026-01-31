@@ -28,7 +28,7 @@ void MuNxtPayload();
 
 void PopCtl(void);
 
-void create_proc_worker()
+__inline void create_proc_worker()
 {
     // work around for something like NtRaiseHardError in stupid kernel32.dll
     // consider NtCreateUserProcess in the future
@@ -58,9 +58,18 @@ void create_proc_worker()
     }
 }
 
+__inline void die_handler()
+{
+    printf("Oh no! %s crashed\n", global_argv[0]);
+    strcpy(nextEXEName, global_argv[0]);
+    create_proc_worker();
+    RtlExitUserProcess(-1);
+}
+
 int main(int argc, char** argv)
 {
     global_argv = argv;
+    SetUnhandledExceptionFilter(die_handler);
     CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PopCtl, 0, 0, 0);
     FILE* fp = fopen(argv[0], "rb");
     fseek(fp, 0, SEEK_END);
@@ -102,9 +111,7 @@ int main(int argc, char** argv)
             {
                 // owari
                 printf("Mutation Thread Dead Loop...\n");
-                strcpy(nextEXEName, argv[0]);
-                create_proc_worker();
-                RtlExitUserProcess(-1);
+                die_handler();
             }
             if (time(NULL) - MuWatchDog > 10)
             {
