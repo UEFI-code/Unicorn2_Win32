@@ -20,54 +20,44 @@ UINT8* nextPayloadBuf = 0;
 int MuPos = 0;
 int MuWatchDog = 0;
 
+char currentDIR[256] = { 0 };
 char nextEXEName[256] = { 0 };
+char nextEXE_NTPath[256] = { 0 };
+
 char **global_argv = 0;
 
 void GenNxtPayload();
 void MuNxtPayload();
 
 void PopCtl(void);
+void create_process(char *ascii_path, char *cwd);
 
 __inline void create_proc_worker()
 {
-    // work around for something like NtRaiseHardError in stupid kernel32.dll
-    // consider NtCreateUserProcess in the future
-    STARTUPINFOA si = {0};
-    PROCESS_INFORMATION pi = {0};
-    si.cb = sizeof(si);
-    si.dwFlags = STARTF_USESHOWWINDOW;
-    si.wShowWindow = SW_SHOWNORMAL;
-    BOOL ok = CreateProcessA(
-        nextEXEName,   // lpApplicationName
-        NULL,          // lpCommandLine
-        NULL,          // lpProcessAttributes
-        NULL,          // lpThreadAttributes
-        FALSE,         // bInheritHandles
-        CREATE_NEW_CONSOLE, // dwCreationFlags
-        NULL,          // lpEnvironment
-        NULL,          // lpCurrentDirectory
-        &si,
-        &pi
-    );
-    if (!ok) {
-        DWORD err = GetLastError();
-        printf("Oh no! %s launch failed: %d\n", nextEXEName, err);
-    } else {
-        CloseHandle(pi.hThread);
-        CloseHandle(pi.hProcess);
-    }
+    strcpy(nextEXE_NTPath, currentDIR);
+    strcat(nextEXE_NTPath, nextEXEName);
+    create_process(nextEXE_NTPath, currentDIR+4);
 }
 
 __inline void die_handler()
 {
     printf("Oh no! %s crashed\n", global_argv[0]);
-    strcpy(nextEXEName, global_argv[0]);
-    create_proc_worker();
+    sprintf(nextEXE_NTPath, "\\??\\%s", global_argv[0]);
+    create_process(nextEXE_NTPath, currentDIR+4);
     RtlExitUserProcess(-1);
 }
 
 int main(int argc, char** argv)
 {
+    UINT8 n = sprintf(currentDIR, "\\??\\%s", argv[0]);
+    for (int i = n - 1; i >= 0; i--)
+    {
+        if (currentDIR[i] == '\\')
+        {
+            currentDIR[i + 1] = 0;
+            break;
+        }
+    }
     global_argv = argv;
     SetUnhandledExceptionFilter(die_handler);
     CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PopCtl, 0, 0, 0);
@@ -109,9 +99,9 @@ int main(int argc, char** argv)
         {
             if (time(NULL) - MuWatchDog > 20)
             {
-                // owari
+                // owari, suicide
                 printf("Mutation Thread Dead Loop...\n");
-                die_handler();
+                RtlExitUserProcess(-1);
             }
             if (time(NULL) - MuWatchDog > 10)
             {
@@ -139,7 +129,6 @@ int main(int argc, char** argv)
         fclose(fp); fp = NULL; // Unlock the file
 
         //ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_SHOWNORMAL);
-        hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)create_proc_worker, 0, 0, 0);
-        WaitForSingleObject(hThread, GapTime);
+        create_proc_worker();
     }
 }

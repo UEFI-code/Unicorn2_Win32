@@ -24,9 +24,15 @@
     <ClCompile Include="Mutation.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="proc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Unicorn2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ntdll_tools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

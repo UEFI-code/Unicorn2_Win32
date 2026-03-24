@@ -42,13 +42,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -134,9 +134,11 @@
   <ItemGroup>
     <ClCompile Include="Mutation.c" />
     <ClCompile Include="PopulationCtl.c" />
+    <ClCompile Include="proc.c" />
     <ClCompile Include="Unicorn2.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ntdll_tools.h" />
     <ClInclude Include="Unicorn2.h" />
   </ItemGroup>
   <ItemGroup>
