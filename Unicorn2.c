@@ -30,8 +30,8 @@ void GenNxtPayload();
 void MuNxtPayload();
 
 void PopCtl(void);
-void create_process(char *ascii_path, char *cwd);
 
+void create_process(char *ascii_path, char *cwd);
 __inline void create_proc_worker()
 {
     strcpy(nextEXE_NTPath, currentDIR);
