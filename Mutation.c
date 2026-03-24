@@ -12,31 +12,31 @@ LONG revert_code_handle(EXCEPTION_POINTERS* ep)
     switch (ep->ExceptionRecord->ExceptionCode)
     {   
         case EXCEPTION_ILLEGAL_INSTRUCTION:
-            printf("Illegal Instruction Exception Caught!\n");
+            printf("- Illegal Instruction Exception Caught!\n");
             break;
         case EXCEPTION_PRIV_INSTRUCTION:
-            printf("Privileged Instruction Exception Caught!\n");
+            printf("- Privileged Instruction Exception Caught!\n");
             break;
         case EXCEPTION_INT_DIVIDE_BY_ZERO:
-            printf("Divide By Zero Exception Caught!\n");
+            printf("- Divide By Zero Exception Caught!\n");
             break;
         case EXCEPTION_BREAKPOINT:
-            printf("Breakpoint Exception Caught!\n");
+            printf("- Breakpoint Exception Caught!\n");
             break;
         case EXCEPTION_ACCESS_VIOLATION:
-            printf("Access Violation Exception Caught!\n");
+            printf("- Access Violation Exception Caught!\n");
             break;
         default:
-            printf("Other Exception Caught! Code: 0x%X\n", ep->ExceptionRecord->ExceptionCode);
+            printf("- Other Exception Caught! Code: 0x%X\n", ep->ExceptionRecord->ExceptionCode);
     }
     if (RIP >= nextPayloadBuf && RIP < nextPayloadBuf + NextPayloadSize)
     {
-        printf("Lucky, RIP still in range, patch: %x -> NOP\n", *RIP);
+        printf("    - Lucky, RIP still in range, patch: %x -> NOP\n", *RIP);
         *RIP = 0x90; // NOP
     }
     else
     {
-        printf("Oh no, RIP out of range, revert code\n");
+        printf("    - Oh no, RIP out of range, revert code\n");
         for(int i=0; i<x86MaxInsLen; i++)
         {
             nextPayloadBuf[MuPos + i] = BackupBuf[i];
