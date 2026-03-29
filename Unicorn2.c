@@ -31,19 +31,19 @@ void MuNxtPayload();
 
 void PopCtl(void);
 
-void create_process(char *ascii_path, char *cwd);
+void create_process(char *ascii_path);
 __inline void create_proc_worker()
 {
     strcpy(nextEXE_NTPath, currentDIR);
     strcat(nextEXE_NTPath, nextEXEName);
-    create_process(nextEXE_NTPath, currentDIR+4);
+    create_process(nextEXE_NTPath);
 }
 
 __inline void die_handler()
 {
     printf("Oh no! %s crashed\n", global_argv[0]);
     sprintf(nextEXE_NTPath, "\\??\\%s", global_argv[0]);
-    create_process(nextEXE_NTPath, currentDIR+4);
+    create_process(nextEXE_NTPath);
     RtlExitUserProcess(-1);
 }
 

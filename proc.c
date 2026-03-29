@@ -145,7 +145,7 @@ typedef struct _KUSER_SHARED_DATA {
 
 PKUSER_SHARED_DATA SharedData = (PKUSER_SHARED_DATA)(0x7FFE0000);
 
-void create_process(char *ascii_path, char *cwd)
+void create_process(char *ascii_path)
 {
     // assume ascii_path is like "\??\C:\Windows\System32\notepad.exe"
     if (strncmp(ascii_path, "\\??\\", 4) != 0)
@@ -162,11 +162,8 @@ void create_process(char *ascii_path, char *cwd)
     UNICODE_STRING dll_path;
     RtlInitUnicodeString(&dll_path, SharedData->NtSystemRoot);
     PRTL_USER_PROCESS_PARAMETERS proc_param;
-    RtlInitAnsiString(&AnsiString, cwd);
-    UNICODE_STRING win32_cwd = { 0 };
-    RtlAnsiStringToUnicodeString(&win32_cwd, &AnsiString, TRUE);
     WCHAR Env[2] = { 0, 0 };
-    NTSTATUS status = RtlCreateProcessParameters(&proc_param, &win32_path, &dll_path, &win32_cwd, Env, NULL, &nt_path, 0, 0, 0);
+    NTSTATUS status = RtlCreateProcessParameters(&proc_param, &win32_path, &dll_path, NULL, Env, NULL, &nt_path, 0, 0, 0);
     if (!NT_SUCCESS(status))
     {
         printf("RtlCreateProcessParameters failed: 0x%X\n", RtlNtStatusToDosError(status));
@@ -181,7 +178,7 @@ void create_process(char *ascii_path, char *cwd)
         NULL,
         NULL,
         NULL,
-        FALSE,
+        TRUE, // current cwd
         NULL,
         NULL,
         &proc_info
